@@ -1,5 +1,8 @@
+using Elsa;
 using Elsa.Activities.MassTransit.Consumers;
 using Elsa.Activities.MassTransit.Extensions;
+using Elsa.Persistence.EntityFramework.Core.Extensions;
+using Elsa.Persistence.EntityFramework.SqlServer;
 using Elsa.Services;
 using ElsaPlayground.Messages;
 using ElsaPlayground.Workflows;
@@ -14,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,12 +61,23 @@ namespace ElsaPlayground
                 });
             });
             services.AddMassTransitHostedService();
+
+            var connectionStr = @"data source=m1cxdev.cee1rfuh5pxy.ap-southeast-2.rds.amazonaws.com; initial catalog=Elsa_Phuc_Test; persist security info=True; User Id=monecrmadmin;Password=w7EDt7vmbF2N;MultipleActiveResultSets=True";
+
             services.AddElsa(options =>
             {
                 options
+                .UseEntityFrameworkPersistence(x => x.UseSqlServer(connectionStr))
                 .AddConsoleActivities()
                 .AddMassTransitActivities()
-                .AddWorkflow<HelloWorld>();
+                .AddQuartzTemporalActivities(configureQuartz: quartz => quartz.UsePersistentStore(store => {
+                    store.UseJsonSerializer();
+                    store.UseSqlServer(connectionStr);
+                    store.UseClustering();
+                }))
+                .ConfigureDistributedLockProvider(x => x.UseSqlServerLockProvider(connectionStr))
+                .AddWorkflow<HelloWorld>()
+                .AddWorkflow<TestTimer>();
             });
         }
 
