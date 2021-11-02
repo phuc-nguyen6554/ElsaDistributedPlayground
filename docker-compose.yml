@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  s1:
+    build:
+     dockerfile: Dockerfile.s1
+    ports:
+      - "8080:80"
+    environment:
+      - TESTING_VARIABLE=Hello
+  s2:
+    build:
+     dockerfile: Dockerfile.s1
+    ports:
+      - "8081:80"
+    environment:
+      - TESTING_VARIABLE=Hello2
