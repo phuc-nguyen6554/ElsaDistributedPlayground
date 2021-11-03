@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Elsa.Activities.MassTransit;
 using ElsaPlayground.Messages;
 using Microsoft.AspNetCore.Http;
+using Elsa.Activities.Temporal;
+using NodaTime;
 
 namespace ElsaPlayground.Workflows
 {
@@ -18,7 +20,9 @@ namespace ElsaPlayground.Workflows
             builder
                 .WithDescription("test")
                 .ReceiveMassTransitMessage(x => x.Set(y => y.MessageType, z => typeof(TestMessage)))
-                .WriteLine("Hello " + test);
+                .WriteLine("Masstransit workflow")
+                .StartIn(Duration.FromSeconds(5))
+                .WriteLine("After delay");
         }
     }
 }

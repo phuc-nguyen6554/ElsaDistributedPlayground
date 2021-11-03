@@ -15,7 +15,7 @@ namespace ElsaPlayground.Workflows
         {
             builder
                 .Timer(Duration.FromSeconds(10))
-                .WriteLine("Hello");
+                .WriteLine("Timer workflow");
         }
     }
 }

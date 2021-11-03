@@ -7,6 +7,9 @@ services:
       - "8080:80"
     environment:
       - TESTING_VARIABLE=Hello
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
   s2:
     build:
      dockerfile: Dockerfile.s1
@@ -14,3 +17,6 @@ services:
       - "8081:80"
     environment:
       - TESTING_VARIABLE=Hello2
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
