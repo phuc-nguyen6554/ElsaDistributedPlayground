@@ -52,7 +52,7 @@ namespace ElsaPlayground
 
                 config.SetKebabCaseEndpointNameFormatter();
                 config.UsingRabbitMq((context, config) => {
-                    config.Host("192.168.31.219", 5672, "/", h =>
+                    config.Host("192.168.1.18", 5672, "/", h =>
                     {
                         h.Username("admin");
                         h.Password("admin");
@@ -63,22 +63,22 @@ namespace ElsaPlayground
             services.AddMassTransitHostedService();
 
             //var connectionStr = @"data source=m1cxdev.cee1rfuh5pxy.ap-southeast-2.rds.amazonaws.com; initial catalog=Elsa_Phuc_Test; persist security info=True; User Id=monecrmadmin;Password=w7EDt7vmbF2N;MultipleActiveResultSets=True";
+            var connectionStr = @"Data Source=tcp:192.168.1.18, 1433;Initial Catalog=ElsaPlayground;User ID=ElsaTest;Password=1234";
 
             services.AddElsa(options =>
             {
                 options
-                //.UseEntityFrameworkPersistence(x => x.UseSqlServer(connectionStr))
+                .UseEntityFrameworkPersistence(x => x.UseSqlServer(connectionStr))
                 .AddConsoleActivities()
                 .AddMassTransitActivities()
-                .AddQuartzTemporalActivities()
-                //.AddQuartzTemporalActivities(configureQuartz: quartz => quartz.UsePersistentStore(store =>
-                //{
-                //    //store.Properties["quartz.scheduler.instanceId"] = "AUTO";
-                //    store.UseJsonSerializer();
-                //    store.UseSqlServer(connectionStr);
-                //    store.UseClustering(option => option.CheckinInterval = TimeSpan.FromSeconds(5));
-                //}))
-                //.ConfigureDistributedLockProvider(x => x.UseSqlServerLockProvider(connectionStr))
+                //.AddQuartzTemporalActivities()
+                .AddQuartzTemporalActivities(configureQuartz: quartz => quartz.UsePersistentStore(store =>
+                {
+                    store.UseJsonSerializer();
+                    store.UseSqlServer(connectionStr);
+                    store.UseClustering(/*option => option.CheckinInterval = TimeSpan.FromSeconds(5)*/);
+                }))
+                .ConfigureDistributedLockProvider(x => x.UseSqlServerLockProvider(connectionStr))
                 .AddWorkflow<HelloWorld>();
                 //.AddWorkflow<TestTimer>();
             });

@@ -20,8 +20,11 @@ namespace ElsaPlayground.Workflows
             builder
                 .WithDescription("test")
                 .ReceiveMassTransitMessage(x => x.Set(y => y.MessageType, z => typeof(TestMessage)))
-                .WriteLine("Masstransit workflow")
-                .StartIn(Duration.FromSeconds(5))
+                .WriteLine(context => {
+                    var str = context.GetInput<TestMessage>();
+                    return str.Message;
+                })
+                .StartIn(Duration.FromSeconds(15))
                 .WriteLine("After delay");
         }
     }
